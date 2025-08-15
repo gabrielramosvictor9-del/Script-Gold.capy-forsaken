@@ -11,7 +11,7 @@ local MenuFrame = Instance.new("Frame")
 MenuFrame.Name = "MenuFrame"
 MenuFrame.Parent = ScreenGui
 MenuFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-MenuFrame.BackgroundTransparency = 0.6 -- deixa transparente
+MenuFrame.BackgroundTransparency = 0.6
 MenuFrame.Size = UDim2.new(0, 220, 0, 300)
 MenuFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 MenuFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -21,7 +21,7 @@ local UICorner = Instance.new("UICorner")
 UICorner.CornerRadius = UDim.new(0.1, 0)
 UICorner.Parent = MenuFrame
 
--- Botão para abrir/fechar menu (lado esquerdo)
+-- Botão para abrir/fechar menu
 local ToggleButton = Instance.new("TextButton")
 ToggleButton.Parent = ScreenGui
 ToggleButton.Size = UDim2.new(0, 70, 0, 25)
@@ -39,12 +39,12 @@ ToggleButton.MouseButton1Click:Connect(function()
     MenuFrame.Visible = not MenuFrame.Visible
 end)
 
--- Função para criar botões no menu
+-- Função para criar botões
 local function criarBotao(texto, yPos, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = MenuFrame
     btn.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-    btn.BackgroundTransparency = 0.4 -- botão semi-transparente
+    btn.BackgroundTransparency = 0.4
     btn.Position = UDim2.new(0.05, 0, yPos, 0)
     btn.Size = UDim2.new(0.9, 0, 0, 35)
     btn.Font = Enum.Font.SourceSansBold
@@ -58,7 +58,7 @@ local function criarBotao(texto, yPos, callback)
     return btn
 end
 
--- ===== ESP MÁQUINA ===== (azul)
+-- ===== ESP MÁQUINA =====
 local espMachinesEnabled, espMachinesConn = false, nil
 local function toggleESPMaquina()
     espMachinesEnabled = not espMachinesEnabled
@@ -69,7 +69,7 @@ local function toggleESPMaquina()
                     if not part:FindFirstChild("ESPHighlight") then
                         local hl = Instance.new("Highlight", part)
                         hl.Name = "ESPHighlight"
-                        hl.OutlineColor = Color3.fromRGB(0, 0, 255) -- azul
+                        hl.OutlineColor = Color3.fromRGB(0, 0, 255)
                         hl.FillTransparency = 0.7
                     end
                 end
@@ -98,7 +98,7 @@ local function toggleESPPlayers()
                         if not plr.Character:FindFirstChild("ESPPlayerHighlight") then
                             local hl = Instance.new("Highlight", plr.Character)
                             hl.Name = "ESPPlayerHighlight"
-                            hl.OutlineColor = Color3.new(1, 0, 0) -- vermelho
+                            hl.OutlineColor = Color3.new(1, 0, 0)
                             hl.FillTransparency = 0.7
                         end
                     else
@@ -118,7 +118,7 @@ local function toggleESPPlayers()
 end
 criarBotao("ESP Player >200HP", 0.25, toggleESPPlayers)
 
--- ===== TP (entrar debaixo da terra) =====
+-- ===== TP =====
 local tpEnabled = false
 local function toggleTP()
     tpEnabled = not tpEnabled
@@ -132,3 +132,33 @@ local function toggleTP()
     end
 end
 criarBotao("TP", 0.45, toggleTP)
+
+-- ===== ESP KIT MÉDICO =====
+local espMedkitEnabled, espMedkitConn = false, nil
+local function toggleESPMedkit()
+    espMedkitEnabled = not espMedkitEnabled
+    if espMedkitEnabled then
+        espMedkitConn = RunService.RenderStepped:Connect(function()
+            for _, part in pairs(workspace:GetDescendants()) do
+                if part:IsA("Model") or part:IsA("Part") then
+                    local nameLower = part.Name:lower()
+                    if nameLower:find("medkit") or nameLower:find("firstaid") then
+                        if not part:FindFirstChild("ESPMedkitHighlight") then
+                            local hl = Instance.new("Highlight", part)
+                            hl.Name = "ESPMedkitHighlight"
+                            hl.OutlineColor = Color3.fromRGB(0, 255, 0)
+                            hl.FillTransparency = 0.7
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        if espMedkitConn then espMedkitConn:Disconnect() end
+        for _, part in pairs(workspace:GetDescendants()) do
+            local hl = part:FindFirstChild("ESPMedkitHighlight")
+            if hl then hl:Destroy() end
+        end
+    end
+end
+criarBotao("ESP Kit Médico", 0.65, toggleESPMedkit)
