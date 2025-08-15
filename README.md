@@ -39,7 +39,7 @@ ToggleButton.MouseButton1Click:Connect(function()
     MenuFrame.Visible = not MenuFrame.Visible
 end)
 
--- Função para criar botões
+-- Função para criar botões dentro do menu
 local function criarBotao(texto, yPos, callback)
     local btn = Instance.new("TextButton")
     btn.Parent = MenuFrame
@@ -69,7 +69,7 @@ local function toggleESPMaquina()
                     if not part:FindFirstChild("ESPHighlight") then
                         local hl = Instance.new("Highlight", part)
                         hl.Name = "ESPHighlight"
-                        hl.OutlineColor = Color3.fromRGB(0, 0, 255)
+                        hl.OutlineColor = Color3.fromRGB(0, 0, 255) -- Azul
                         hl.FillTransparency = 0.7
                     end
                 end
@@ -84,6 +84,62 @@ local function toggleESPMaquina()
     end
 end
 criarBotao("ESP Máquina", 0.05, toggleESPMaquina)
+
+-- ===== ESP KIT MÉDICO =====
+local espMedkitEnabled, espMedkitConn = false, nil
+local function toggleESPMedkit()
+    espMedkitEnabled = not espMedkitEnabled
+    if espMedkitEnabled then
+        espMedkitConn = RunService.RenderStepped:Connect(function()
+            for _, part in pairs(workspace:GetDescendants()) do
+                local nameLower = part.Name:lower()
+                if nameLower:find("medkit") or nameLower:find("firstaid") then
+                    if not part:FindFirstChild("ESPMedkitHighlight") then
+                        local hl = Instance.new("Highlight", part)
+                        hl.Name = "ESPMedkitHighlight"
+                        hl.OutlineColor = Color3.fromRGB(0, 255, 0) -- Verde
+                        hl.FillTransparency = 0.7
+                    end
+                end
+            end
+        end)
+    else
+        if espMedkitConn then espMedkitConn:Disconnect() end
+        for _, part in pairs(workspace:GetDescendants()) do
+            local hl = part:FindFirstChild("ESPMedkitHighlight")
+            if hl then hl:Destroy() end
+        end
+    end
+end
+criarBotao("ESP Kit Médico", 0.25, toggleESPMedkit)
+
+-- ===== ESP BLOX COLA =====
+local espColaEnabled, espColaConn = false, nil
+local function toggleESPCola()
+    espColaEnabled = not espColaEnabled
+    if espColaEnabled then
+        espColaConn = RunService.RenderStepped:Connect(function()
+            for _, part in pairs(workspace:GetDescendants()) do
+                local nameLower = part.Name:lower()
+                if nameLower:find("blox cola") or nameLower:find("cola") or nameLower:find("soda") then
+                    if not part:FindFirstChild("ESPColaHighlight") then
+                        local hl = Instance.new("Highlight", part)
+                        hl.Name = "ESPColaHighlight"
+                        hl.OutlineColor = Color3.fromRGB(255, 255, 0) -- Amarelo
+                        hl.FillTransparency = 0.7
+                    end
+                end
+            end
+        end)
+    else
+        if espColaConn then espColaConn:Disconnect() end
+        for _, part in pairs(workspace:GetDescendants()) do
+            local hl = part:FindFirstChild("ESPColaHighlight")
+            if hl then hl:Destroy() end
+        end
+    end
+end
+criarBotao("ESP Blox Cola", 0.45, toggleESPCola)
 
 -- ===== ESP PLAYER >200HP =====
 local espPlayersEnabled, espPlayersConn = false, nil
@@ -116,49 +172,47 @@ local function toggleESPPlayers()
         end
     end
 end
-criarBotao("ESP Player >200HP", 0.25, toggleESPPlayers)
+criarBotao("ESP Player >200HP", 0.65, toggleESPPlayers)
 
--- ===== TP =====
-local tpEnabled = false
-local function toggleTP()
-    tpEnabled = not tpEnabled
+-- ===== BOTÕES TP FORA DO MENU =====
+-- TP UP
+local TPUpButton = Instance.new("TextButton")
+TPUpButton.Parent = ScreenGui
+TPUpButton.Size = UDim2.new(0, 100, 0, 40)
+TPUpButton.Position = UDim2.new(0.7, 0, 0.05, 0)
+TPUpButton.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+TPUpButton.TextColor3 = Color3.new(1, 1, 1)
+TPUpButton.Text = "TP ⬆️"
+TPUpButton.Font = Enum.Font.SourceSansBold
+TPUpButton.TextSize = 20
+local upCorner = Instance.new("UICorner")
+upCorner.CornerRadius = UDim.new(0.1, 0)
+upCorner.Parent = TPUpButton
+
+TPUpButton.MouseButton1Click:Connect(function()
     local char = player.Character
     if char and char:FindFirstChild("HumanoidRootPart") then
-        if tpEnabled then
-            char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame - Vector3.new(0, 50, 0)
-        else
-            char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
-        end
+        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
     end
-end
-criarBotao("TP", 0.45, toggleTP)
+end)
 
--- ===== ESP KIT MÉDICO =====
-local espMedkitEnabled, espMedkitConn = false, nil
-local function toggleESPMedkit()
-    espMedkitEnabled = not espMedkitEnabled
-    if espMedkitEnabled then
-        espMedkitConn = RunService.RenderStepped:Connect(function()
-            for _, part in pairs(workspace:GetDescendants()) do
-                if part:IsA("Model") or part:IsA("Part") then
-                    local nameLower = part.Name:lower()
-                    if nameLower:find("medkit") or nameLower:find("firstaid") then
-                        if not part:FindFirstChild("ESPMedkitHighlight") then
-                            local hl = Instance.new("Highlight", part)
-                            hl.Name = "ESPMedkitHighlight"
-                            hl.OutlineColor = Color3.fromRGB(0, 255, 0)
-                            hl.FillTransparency = 0.7
-                        end
-                    end
-                end
-            end
-        end)
-    else
-        if espMedkitConn then espMedkitConn:Disconnect() end
-        for _, part in pairs(workspace:GetDescendants()) do
-            local hl = part:FindFirstChild("ESPMedkitHighlight")
-            if hl then hl:Destroy() end
-        end
+-- TP DOWN
+local TPDownButton = Instance.new("TextButton")
+TPDownButton.Parent = ScreenGui
+TPDownButton.Size = UDim2.new(0, 100, 0, 40)
+TPDownButton.Position = UDim2.new(0.7, 0, 0.25, 0)
+TPDownButton.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+TPDownButton.TextColor3 = Color3.new(1, 1, 1)
+TPDownButton.Text = "TP ⬇️"
+TPDownButton.Font = Enum.Font.SourceSansBold
+TPDownButton.TextSize = 20
+local downCorner = Instance.new("UICorner")
+downCorner.CornerRadius = UDim.new(0.1, 0)
+downCorner.Parent = TPDownButton
+
+TPDownButton.MouseButton1Click:Connect(function()
+    local char = player.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = char.HumanoidRootPart.CFrame - Vector3.new(0, 50, 0)
     end
-end
-criarBotao("ESP Kit Médico", 0.65, toggleESPMedkit)
+end)
